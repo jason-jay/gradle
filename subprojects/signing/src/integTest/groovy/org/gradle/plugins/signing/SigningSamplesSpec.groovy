@@ -138,6 +138,23 @@ class SigningSamplesSpec extends AbstractSampleIntegrationTest {
         dsl << ['groovy', 'kotlin']
     }
 
+    @Unroll
+    @UsesSample('signing/in-memory')
+    def "uses in-memory PGP keys with dsl #dsl"() {
+        given:
+        def projectDir = sample.dir.file(dsl)
+        inDirectory(projectDir)
+
+        when:
+        succeeds("signStuffZip")
+
+        then:
+        projectDir.file('build/distributions/stuff.zip.asc').exists()
+
+        where:
+        dsl << ['groovy', 'kotlin']
+    }
+
     MavenFileRepository repoFor(String dsl) {
         return maven(sample.dir.file("$dsl/build/repo"))
     }

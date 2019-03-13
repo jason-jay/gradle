@@ -45,7 +45,7 @@ class ResolveChangesStepTest extends StepSpec {
             def changes = delegateContext.changes.get()
             assert getRebuildReason(changes) == "Forced rebuild."
             try {
-                changes.getInputChanges()
+                changes.getInputChanges(ImmutableMap.of())
                 assert false
             } catch (UnsupportedOperationException e) {
                 assert e.message == 'Cannot query input changes when input tracking is disabled.'
@@ -84,7 +84,7 @@ class ResolveChangesStepTest extends StepSpec {
         1 * context.work >> work
         1 * delegate.execute(_) >> { IncrementalChangesContext delegateContext ->
             def changes = delegateContext.changes.get()
-            assert !changes.getInputChanges().incremental
+            assert !changes.getInputChanges(ImmutableMap.of()).incremental
             assert getRebuildReason(changes) == "No history is available."
             return delegateResult
         }
@@ -92,7 +92,6 @@ class ResolveChangesStepTest extends StepSpec {
         1 * context.beforeExecutionState >> Optional.of(beforeExecutionState)
         1 * beforeExecutionState.getInputFileProperties() >> ImmutableSortedMap.of()
         1 * context.afterPreviousExecutionState >> Optional.empty()
-        1 * work.inputToPropertyNames >> ImmutableMap.of()
         1 * work.displayName >> "Some unit of work"
         0 * _
     }
@@ -117,7 +116,7 @@ class ResolveChangesStepTest extends StepSpec {
         1 * context.beforeExecutionState >> Optional.of(beforeExecutionState)
         1 * context.afterPreviousExecutionState >> Optional.of(afterPreviousExecutionState)
         1 * work.allowOverlappingOutputs >> true
-        1 * changeDetector.detectChanges(afterPreviousExecutionState, beforeExecutionState, work, false, work) >> changes
+        1 * changeDetector.detectChanges(afterPreviousExecutionState, beforeExecutionState, work, false) >> changes
         0 * _
     }
     

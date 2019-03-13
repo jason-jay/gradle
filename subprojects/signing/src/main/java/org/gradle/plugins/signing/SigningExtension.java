@@ -240,8 +240,8 @@ public class SigningExtension {
      *
      * <pre><code>
      * signing {
-     *     def secretKey = System.getenv("MY_SECRET_KEY")
-     *     def password = System.getenv("MY_SECRET_KEY_PASSPHRASE")
+     *     def secretKey = findProperty("mySigningKey")
+     *     def password = findProperty("mySigningPassword")
      *     useInMemoryPgpKeys(secretKey, password)
      * }
      * </code></pre>

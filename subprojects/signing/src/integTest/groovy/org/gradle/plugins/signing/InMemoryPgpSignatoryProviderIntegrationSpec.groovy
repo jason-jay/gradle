@@ -27,7 +27,7 @@ class InMemoryPgpSignatoryProviderIntegrationSpec extends SigningIntegrationSpec
         """
 
         when:
-        succeeds("signJar", "-PsecretKey=$secretKey", "-Ppassword=$password")
+        succeeds("signJar", "-PsecretKey=$secretKeyWithPassword", "-Ppassword=$password")
 
         then:
         executed(":signJar")
@@ -47,14 +47,31 @@ class InMemoryPgpSignatoryProviderIntegrationSpec extends SigningIntegrationSpec
         """
 
         when:
-        succeeds("signJar", "-PsecretKey=$secretKey", "-Ppassword=$password")
+        succeeds("signJar", "-PsecretKey=$secretKeyWithPassword", "-Ppassword=$password")
 
         then:
         executed(":signJar")
         file("build", "libs", "sign-1.0.jar.asc").exists()
     }
 
-    private static final secretKey = '''\
+    def "supports keys without passwords"() {
+        given:
+        buildFile << """
+            signing {
+                useInMemoryPgpKeys(project.properties['secretKey'], '')
+                sign(jar)
+            }
+        """
+
+        when:
+        succeeds("signJar", "-PsecretKey=$secretKeyWithoutPassword")
+
+        then:
+        executed(":signJar")
+        file("build", "libs", "sign-1.0.jar.asc").exists()
+    }
+
+    private static final secretKeyWithPassword = '''\
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQPGBFxb6KEBCAC/lBOqM5Qx116XOWIK3vavHF3eSNx9PbCtGZCRiYeB0xbGvKPw
@@ -115,5 +132,64 @@ ZZ8X/eH+PzjPrhshJR+f4lP7gh1k34mWtw9vlnvhQEdUQw8=
 =AXAR
 -----END PGP PRIVATE KEY BLOCK-----'''
     private static final password = 'foo'
+
+    private static final secretKeyWithoutPassword = '''\
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+lQOYBFyI758BCACn1dO3pid06f4lGcRrLxEVmVi4jNgJgSAuUlciMV6QiIuM8VZ5
+bq6F04XJDJZgnqFOXlrIK83Rf+MwhIfgu20zCS+E7CsEX1uVE7k+9rN90sA9sPrE
+q0TKZFwjWzOrpc1IGwxa+NOUTweiYIRyXV88cqB0xpux+WDU7W1CrqO6FgpXD8f7
+emWbcB/E47KJSN5L9YeQrb65wqhspIfucHTZLaUO5Afl0mlR1mLT2B2ejaRhAWJX
+4jXLNGZChCnSGkBfgSu6akCYwrh8quO17s0iKzDF+dNbWji18JDYRAxOj01EM7V/
+CHNYTmRHnor8BiDhSDWL4ztI4E5xcaU8HvWvABEBAAEAB/0eZz3TJuY+56SCVAig
+4gXWQ9EunVUFY77QpVnjd84JoLKm9ZEUrlgvJgI2SXF0T0gpSi5n1IeUS/Z784Yp
+z8oYVLGnAqFISX3to4ULQuWBBYyNoGHM/rmXcFbAkOTrUz28simq0SiC1U4svA9C
+KGf4K0ul29SYiPRhniEM01YVf11Ya42weOCrXIHFNSvIUEuSg05GWOWP3i/Y5CSx
+VZvfPJyuxvMMYbGQ0WJCEkbnkm3EqYMdMqCCHyH3fTS4aKt0Q3HTT18mJhlLUP35
+VYBcrIxDWmqgIlbwwS9AQU/XQzsNz0N067G/m4zeo6Cw16y8Kx1quvHu9D+HabPD
+NlsBBADBYeI1+qFpe5EuVGG4MWeMnW0iWtu7pquuX6UYFTODS+n1n2aNUPlHmeaZ
+SBevsVFwisueVhwNEA90kNS9C9c+RkK65hUzgxhLyAFgXucGTnoFFh2s+wZk2Wih
+7i+jKOOBLqcllNpKS1C1gLYmm+05ExsFmcwbL349YYmI87AwAwQA3i5CI69IZkwX
+7qR0gENDkGnmONchzF+aFojFhtirwMzosJHpxhFLuG9rlK8wtdJ3xlCIZrVm/B80
+ugEOYqXjAtrR+ad0ZPGr0RL5WxiCDCCyW6VdktP4772mS1jRIYtiQma/8R5LsA1k
+6u9DfXcIZacFTdX2xByzLXJhqMUcAeUD/0JpnESj/cj2WsAj4QSOg0qMv1v0A0AQ
+0E11tTFu1FsMpVCV9AQx5h3bUbZeDiO00/0o70w17iHciz0nI3si375c0gHsSUyj
+paS/5c86gaeFHrTEr0UA1PJqZIHo+tieZ9Gvn8beHKaVDWZZTtnSCCkHc2dGy30J
+NDpQLhY28BLwOw+0GVRlc3RpbmcgPHRlc3RAZ3JhZGxlLm9yZz6JAVQEEwEIAD4W
+IQR+ADFmwHrj3vOohgOFqMMFox2drAUCXIjvnwIbAwUJA8JnAAULCQgHAgYVCgkI
+CwIEFgIDAQIeAQIXgAAKCRCFqMMFox2drPFtB/9K80qF0bmqgT/9HT50oyP7SsdR
+K6aof36xSSNpBGhTqSTCzA/u6TZPD9uT3nrBp77uFRAu6y1+Ry9sQt2UWf0R9HWK
+PkSkfVF59hrRchBCqCw3HdREVbjQqCT0K/B0EHoOOoZ2IQbvNpvxEBjenENj4o7q
+HjpL9LZWmhtJNy9EDDsE8WCMkIdzBng9TQTdPmvfKIjiwjmCtSL4e8MNDIGh8JpP
+2p2fnS1DHTyCkbi3uBf65hr9zR+FDv22OhGRJPRv50Wvi4BL2sRusaiyrCubNydt
+GXqE8dYOG8pAbNMTbBM7Ncj/wriDENxqDcOFIjXB4ghQMdlncxxKUVgXzPajnQOY
+BFyI758BCAC0dNOZ+95havJEHLQMB5bA0wf0Owy4C2h24MAyHk+PKIUuEVsDr/nf
+kLRAz+2XeEiitcqYybzDPgIknBgcZcVGaIWVdojHsawm4py/upjG1ZRh4dajjLct
+bV9/uijBdIHLCrLeRhyibkMSD3NHebjdxBr72uORc9jC8r98jBLsSDlKC6ayjnPb
+fQrc3ujfhpthzXaTv9eanB8uSbUUVJmYb2SxQ2KTyjFt7/UwzO708JKaMjud/4Iw
+qhHmUfxeg+xtWkr0Wx/TseNbJfXWPfmA1LSgj1L/AnQ7KkDv8sjLAe3Wv7u3PqTf
+irI+e1Jb13GpJ/bWVP+4nE35s7aBMlRjABEBAAEAB/4z6cXz7urPIKqYYJ+FNGuw
+hiUsJA6pJZMEW+y+nkyp9PC3S4Pg4C+kmqbYXFjP8ekHcf/aC3MzwbNxH7yp8rcZ
+ZblEQajgteK9/wQz/fS0gr3gmM0cGL+boHLQNlhCKwepxyak3gufyNOfrvUtcz11
+AtT2bkZ4UhjiIF5o8I0DDtmo5ThqXjtTrdQMbScs4mp9kjodf55DP7HDhgm7OPdJ
+PorA8hhv8vkdg+JzPJzzg8gn+WxPRaAlcZ9j22qiQMF1hc0hnBih6LVHFol/278i
+3TDsrrCXlYcW30rlW0+G1+1Jc4p8fC7R5BC8fko9wtNoIJ4G1FK6e60+ATtp4CqZ
+BADCE+p8MdzvmIp7tbdo8bZQZy2n1qY2P9GEqLdzPnN5mBaU1DnaCn7D+ME1cal+
+FKkgT5fB4nZEB1ClgZ8GRvJZEKzdBEVwzkBvl4zsFdTkVGYBBG47BlSjl7X6z6Rt
+OOaaycqoPPfQUCmrBCbN2yvcnfnEnkSOwBvLWf0qeQXTqQQA7ghTE3BJ6vFDv37M
+zTI73orPY/ZGh8uPefN4e2CKBQLvmZPFNWG3Ahm2PAxbmvejNPKWWAWGjHJdB924
+ER/TaFQO9fsX+19XTDaHGZCm57frLyzDvs4kn5u6zZ2015R6DxsmKavQqsdE6Zec
+/uyy7QMIeSxt+aWDILimbjnV7ysD/3QRHljpSCYOYO25hrifoER/VJH4RW5i6m5p
+D6MBo3FkmIYy94oHdVXaBKqlXieZfaRwzMAmArcgldHYMxTIVX1HDeSd+ya/jAuy
+lEZMI5hTXmnUSfPTdLRn265jXxiJNxirZjw/8CFnwVAGDP9jAAnGjc6cl5TJIocy
+IcTP7/55RvKJATwEGAEIACYWIQR+ADFmwHrj3vOohgOFqMMFox2drAUCXIjvnwIb
+DAUJA8JnAAAKCRCFqMMFox2drBE5B/kBbIQfNrHSqX8DLgpSUsFJVna3/Yp7jTEA
+ZfZhbgTorqvCTNyaZs9BNi6jaZ/GdkEv7dt9WMtcdm76r6LTgjpEMFGXQRAyTq9Z
+A/4Op5poa+dMHPRj7FvJTX792XRau5iAUTS9N1PeITF+kT1sU/BC5jqCi8dghwEe
+5B9Pc6JbQLxVxBHOa8eSg3wi+jUeEHYzWQ9xH6O1PQ4fyAHT31P1VZqEvKB0i02C
+5D76SJrUXr6cRi9JE/+/rJ34SM7oZdCVKSyoZbsHIbvdCoW6gRe6vHm6i/sGGAxC
+t39qTMnx9LG1EdsZJ1KMUMau1/h15WVWUK10cK7IPSQ2vV+dThEj
+=Y8Fu
+-----END PGP PRIVATE KEY BLOCK-----'''
 
 }

@@ -27,7 +27,11 @@ class InMemoryPgpSignatoryProviderIntegrationSpec extends SigningIntegrationSpec
         """
 
         when:
-        succeeds("signJar", "-PsecretKey=$secretKeyWithPassword", "-Ppassword=$password")
+        executer.withEnvironmentVars([
+            ORG_GRADLE_PROJECT_secretKey: secretKeyWithPassword,
+            ORG_GRADLE_PROJECT_password: password
+        ])
+        succeeds("signJar")
 
         then:
         executed(":signJar")
@@ -47,7 +51,11 @@ class InMemoryPgpSignatoryProviderIntegrationSpec extends SigningIntegrationSpec
         """
 
         when:
-        succeeds("signJar", "-PsecretKey=$secretKeyWithPassword", "-Ppassword=$password")
+        executer.withEnvironmentVars([
+            ORG_GRADLE_PROJECT_secretKey: secretKeyWithPassword,
+            ORG_GRADLE_PROJECT_password: password
+        ])
+        succeeds("signJar")
 
         then:
         executed(":signJar")
@@ -64,7 +72,10 @@ class InMemoryPgpSignatoryProviderIntegrationSpec extends SigningIntegrationSpec
         """
 
         when:
-        succeeds("signJar", "-PsecretKey=$secretKeyWithoutPassword")
+        executer.withEnvironmentVars([
+            ORG_GRADLE_PROJECT_secretKey: secretKeyWithoutPassword
+        ])
+        succeeds("signJar")
 
         then:
         executed(":signJar")

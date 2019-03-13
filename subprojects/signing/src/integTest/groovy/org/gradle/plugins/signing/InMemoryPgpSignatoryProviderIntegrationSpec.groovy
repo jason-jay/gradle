@@ -71,7 +71,7 @@ class InMemoryPgpSignatoryProviderIntegrationSpec extends SigningIntegrationSpec
         file("build", "libs", "sign-1.0.jar.asc").exists()
     }
 
-    private static final secretKeyWithPassword = '''\
+    final secretKeyWithPassword = '''\
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQPGBFxb6KEBCAC/lBOqM5Qx116XOWIK3vavHF3eSNx9PbCtGZCRiYeB0xbGvKPw
@@ -131,9 +131,9 @@ UtgJrAsMmQXaKEc1oYMq/dgjGfpfbOc2O5Y72dCjMzj5LQkWtw/yEMWFOmPT4YVD
 ZZ8X/eH+PzjPrhshJR+f4lP7gh1k34mWtw9vlnvhQEdUQw8=
 =AXAR
 -----END PGP PRIVATE KEY BLOCK-----'''
-    private static final password = 'foo'
+    final password = 'foo'
 
-    private static final secretKeyWithoutPassword = '''\
+    final secretKeyWithoutPassword = '''\
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQOYBFyI758BCACn1dO3pid06f4lGcRrLxEVmVi4jNgJgSAuUlciMV6QiIuM8VZ5

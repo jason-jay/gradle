@@ -163,7 +163,7 @@ class SigningSamplesSpec extends AbstractSampleIntegrationTest {
         return maven(sample.dir.file("$dsl/build/repo"))
     }
 
-    private static final secretKey = '''\
+    final secretKey = '''\
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQPGBFxb6KEBCAC/lBOqM5Qx116XOWIK3vavHF3eSNx9PbCtGZCRiYeB0xbGvKPw
@@ -223,6 +223,6 @@ UtgJrAsMmQXaKEc1oYMq/dgjGfpfbOc2O5Y72dCjMzj5LQkWtw/yEMWFOmPT4YVD
 ZZ8X/eH+PzjPrhshJR+f4lP7gh1k34mWtw9vlnvhQEdUQw8=
 =AXAR
 -----END PGP PRIVATE KEY BLOCK-----'''
-    private static final password = 'foo'
+    final password = 'foo'
 
 }
